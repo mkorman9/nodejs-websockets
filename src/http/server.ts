@@ -20,7 +20,7 @@ function serverListen(app: Application, host: string, port: number): Promise<Ser
     const server = app.listen(port, host, () => {
       resolve(server);
     });
-    
+
     server.on('error', err => {
       reject(err);
     });
@@ -35,5 +35,6 @@ function stopServer(server: Server) {
 
   setTimeout(() => {
     console.log('🚫 Timeout while stopping the server');
+    process.exit(1);
   }, serverStopTimeout);
 }

@@ -1,25 +1,20 @@
 import express, {Application, NextFunction, Request, Response} from 'express';
 import expressWs from 'express-ws';
+import cors from 'cors';
 import 'express-async-errors';
+import {HTTPResponseError} from './http_error';
 
-export class HTTPResponseError extends Error {
-  constructor(
-    public statusCode: number,
-    public response: {
-      type: string;
-      title?: string;
-      cause?: unknown;
-    }
-  ) {
-    super();
-  }
-}
+export type AppOptions = {
+  corsOrigin: string;
+  trustProxies: boolean;
+};
 
-export function createApp(): expressWs.Application {
+export function createApp(opts?: Partial<AppOptions>): expressWs.Application {
   const app = express()
-    .set('trust proxy', ['loopback', 'linklocal', 'uniquelocal'])
+    .set('trust proxy', opts?.trustProxies ? ['loopback', 'linklocal', 'uniquelocal'] : [])
     .disable('x-powered-by')
-    .disable('etag');
+    .disable('etag')
+    .use(cors({origin: opts?.corsOrigin}));
   return expressWs(app).app;
 }
 
